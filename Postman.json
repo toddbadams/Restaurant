@@ -1,0 +1,156 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Restaurant",
+		"_postman_id": "a1aed888-d033-5bfe-6d20-a8bc9ba1b0dd",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add Menu",
+			"request": {
+				"url": "http://localhost:9001/menus",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip,deflate",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Todds\",\n  \"items\": [\n    {\n      \"name\": \"Lentil crusted plaice fillet with pumpkin seed chutney, spiced yellow lentil and bottle gourd\",\n      \"price\": 19\n    },\n    {\n      \"name\": \"Spice crusted halibut with tomato tamarind sauce, ginger jaggery pickle\",\n      \"price\": 25\n    },\n    {\n      \"name\": \"Tandoori wild Spencer Gulf king prawns with malai curry sauce, dried shrimp rice\",\n      \"price\": 28\n    },\n    {\n      \"name\": \"Char-grilled Norfolk free range chicken breast with mace and cardamom, mint chilli korma\",\n      \"price\": 20\n    },\n    {\n      \"name\": \"Smoked saddle of Romney Marsh lamb with corn and yoghurt sauce, pilau rice\",\n      \"price\": 25\n    },\n    {\n      \"name\": \"Roast loin of Oisin red deer with pickled baby root vegetables, black stone flower reduction\",\n      \"price\": 34\n    },\n    {\n      \"name\": \"Sorpotel of Iberico pork presa with Goan spiced pork dumplings, steamed wine rice cake\",\n      \"price\": 35\n    },\n    {\n      \"name\": \"Potato and cauliflower kofta, Bangla style green pea and raisin sauce\",\n      \"price\": 16\n    },\n    {\n      \"name\": \"Pan seared aubergine steak with Hyderabadi sesame cashew nut sauce, aubergine chutney\",\n      \"price\": 16\n    },\n    {\n      \"name\": \"Tandoori paneer, Padrón pepper and root vegetables with coriander sauce, garlic naan\",\n      \"price\": 17\n    },\n    {\n      \"name\": \"Seasonal green leaf salad\",\n      \"price\": 5\n    },\n    {\n      \"name\": \"Sprouted moong and cucumber salad\",\n      \"price\": 5\n    },\n    {\n      \"name\": \"Heirloom tomato salad with onion chilli kachumber\",\n      \"price\": 6\n    }\n  ]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Open Bill",
+			"request": {
+				"url": "http://localhost:9001/orders",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip,deflate",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Todd B Adams\",\n  \"menuId\": 1\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET",
+			"request": {
+				"url": "http://localhost:9001/orders/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip,deflate",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add Items",
+			"request": {
+				"url": "http://localhost:9001/orders/1/items",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip,deflate",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"menuItemId\": 1,\n    \"quantity\": 1\n  },\n  {\n    \"menuItemId\": 3,\n    \"quantity\": 1\n  },\n  {\n    \"menuItemId\": 10,\n    \"quantity\": 2\n  }\n]"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Close Bill",
+			"request": {
+				"url": "http://localhost:9001/orders/1/close",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip,deflate",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
