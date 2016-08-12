@@ -3,7 +3,7 @@ using tba.Restaurant.Entities;
 
 namespace tba.Restaurant.App.Models
 {
-    public class ResturantFactory : IResturantFactory
+    public class ResturantFactory : IRestaurantFactory
     {
         public Order Create(OrderRequest request)
         {
@@ -47,8 +47,7 @@ namespace tba.Restaurant.App.Models
             {
                 DinerId = entity.Id,
                 Name = entity.Name,
-                Items = items,
-                Menu = menu
+                Items = items
             };
             return m;
         }

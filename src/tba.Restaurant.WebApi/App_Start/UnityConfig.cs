@@ -40,7 +40,7 @@ namespace tba.Restaurant.WebApi
             // container.RegisterType<IProductRepository, ProductRepository>();
 
             container.RegisterType<IMenuService, MenuService>();
-            container.RegisterType<IResturantFactory, ResturantFactory>();
+            container.RegisterType<IRestaurantFactory, ResturantFactory>();
         }
     }
 }

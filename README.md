@@ -11,17 +11,10 @@ This example has been design as a MVP of code style and contains a few common te
 ## How to run
 1.  Download and build
 2.  Import the Postman.json into Postman
-2.  Create C:\csvfolder
 3.  Create C:\logs
 3.  Start
-4.  Drop the Todds.csv file into C:\csvfolder (this will consume the menu file and delete it on completion)
 5.  Run the Postman collection
 
-## Menu processor
-The menu processor is a CSV parser system that detects when files are added to the CSV directory (C:\csvfolder), and does the following:
-
-* If the file is greater than a given size (expressed as the number of lines) it breaks it into smaller files of the maximum line size).
-* For files with less than or equal to the maximum line size, each line is converted to a database entity which is then added to the database.
 
 ## Restaurant API
 The following is an MSON representation of the Restaurant API which runs at localhost:9001
@@ -155,3 +148,22 @@ This action returns a 200 status code along with a JSON body.
     ]
   }
 }
+
+
+
+# Daily menu loader
+The daily menu is a CSV parser that runs as a windows process.  It detects when files are added to the CSV directory (C:\csvfolder), and does the following:
+
+* If the file is greater than a given size (expressed as the number of lines) it breaks it into smaller files of the maximum line size).
+* For files with less than or equal to the maximum line size, each line is converted to a database entity which is then added to the database.
+
+Currently this is logging the parsed menu.  The next step is to POST the menu into the restaurant api.
+
+
+## How to run
+2.  Create C:\csvfolder
+3.  Create C:\logs
+3.  Start CsvService
+4.  Drop the Todds.csv file into C:\csvfolder (this will consume the menu file and delete it on completion)
+5.  View the log to see consumed data
+

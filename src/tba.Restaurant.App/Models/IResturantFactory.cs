@@ -2,7 +2,7 @@
 
 namespace tba.Restaurant.App.Models
 {
-    public interface IResturantFactory
+    public interface IRestaurantFactory
     {
         Order Create(OrderRequest request);
         OrderItem Create(OrderItemRequest request);

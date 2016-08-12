@@ -8,6 +8,8 @@ using tba.Restaurant.App.Models;
 using tba.Restaurant.App.Services;
 using tba.Restaurant.Entities;
 using tba.Restaurant.WebApi.Context;
+using tba.Restaurant.Data;
+using tba.Restaurant.DataEf;
 
 namespace tba.Restaurant.WebApi.Controllers
 {
@@ -21,7 +23,7 @@ namespace tba.Restaurant.WebApi.Controllers
         {
             // Poor man's IOC
             var context = new RestaurantDbContext();
-            IRepository<Order> repository = new EfRepository<Order>(context, TimeProvider.Current);
+            IOrderRepository repository = new OrderRepository(context);
             IRepository<Menu> menuRepository = new EfRepository<Menu>(context, TimeProvider.Current);
             IMenuService menuService = new MenuService(menuRepository, TimeProvider.Current, new ResturantFactory(), LogManager.GetLogger("MenuService"));
             _service = new OrderService(repository, TimeProvider.Current, menuService, new ResturantFactory(), LogManager.GetLogger("OrderService"));

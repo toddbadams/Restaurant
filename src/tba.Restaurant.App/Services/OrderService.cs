@@ -1,137 +1,86 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using log4net;
 using tba.Core.Exceptions;
-using tba.Core.Persistence.Interfaces;
 using tba.Core.Utilities;
 using tba.Restaurant.App.Models;
 using tba.Restaurant.Entities;
+using tba.Restaurant.Data;
+using System.Collections.Generic;
 
 namespace tba.Restaurant.App.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IRepository<Order> _dinerRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly ITimeProvider _timeProvider;
         private readonly IMenuService _menuService;
-        private readonly IResturantFactory _resturantFactory;
+        private readonly IRestaurantFactory _restaurantFactory;
         private readonly ILog _log;
         private const string FriendlyName = "Order Service";
 
-        public OrderService(IRepository<Order> dinerRepository,
+        public OrderService(IOrderRepository orderRepository,
             ITimeProvider timeProvider,
             IMenuService menuService,
-            IResturantFactory resturantFactory,
+            IRestaurantFactory restaurantFactory,
             ILog log)
         {
-            _dinerRepository = dinerRepository;
+            _orderRepository = orderRepository;
             _timeProvider = timeProvider;
             _menuService = menuService;
-            _resturantFactory = resturantFactory;
+            _restaurantFactory = restaurantFactory;
             _log = log;
         }
 
-        public async Task<OrderModel> GetAsync(long userId, long dinerId)
+        public async Task<OrderModel> GetAsync(long userId, long orderId)
         {
-            var msg = string.Format("Get. userId={0}, order={1}", userId, dinerId);
-            try
+            var msg = string.Format("Get. userId={0}, order={1}", userId, orderId);
+            _log.Info(msg);
+            var e = await GetEntityAsync(userId, orderId);
+            if (e.State == Order.States.Closed)
             {
-                _log.Info(msg);
-                var e = await GetEntityAsync(userId, dinerId);
-                if (e.State == Order.States.Closed)
-                {
-                    throw new EntityDoesNotExistException("this order is closed");
-                }
-                var menu = await _menuService.GetAsync(userId, e.MenuId);
-                return _resturantFactory.Create(e, menu);
+                throw new EntityDoesNotExistException("this order is closed");
             }
-            catch (EntityDoesNotExistException exception)
-            {
-                _log.Error(msg, exception);
-                throw;
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                throw new ApplicationException(string.Format("Failed to get {0} with id of {1}", FriendlyName, dinerId));
-            }
+            var menu = await _menuService.GetAsync(userId, e.MenuId);
+            return _restaurantFactory.Create(e, menu);
         }
 
-        public async Task<OrderModel> InsertDinerAsync(long userId, OrderRequest order)
+        public async Task<OrderModel> InsertOrderAsync(long userId, OrderRequest order)
         {
             var msg = string.Format("Insert. userId={0}, order={1}", userId, Serialization.Serialize(order));
-            try
-            {
-                _log.Info(msg);
-                var menu = await _menuService.GetAsync(userId, order.MenuId);
-                var e = _resturantFactory.Create(order);
-                await _dinerRepository.InsertAsync(userId, e);
-                var m = _resturantFactory.Create(e, menu);
-                return m;
-            }
-            catch (EntityDoesNotExistException exception)
-            {
-                _log.Error(msg, exception);
-                throw;
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                throw new ApplicationException("Failed to insert " + order.Name + " " + FriendlyName);
-            }
+
+            _log.Info(msg);
+            var menu = await _menuService.GetAsync(userId, order.MenuId);
+            var e = _restaurantFactory.Create(order);
+            await _orderRepository.OpenAsync(userId, e);
+            var m = _restaurantFactory.Create(e, menu);
+            return m;
         }
 
-        public async Task<OrderModel> InsertOrderItemsAsync(long userId, long dinerId, OrderItemRequest[] items)
+        public async Task<OrderModel> InsertOrderItemsAsync(long userId, long orderId, OrderItemRequest[] items)
         {
-            var msg = string.Format("Insert. userId={0}, dinerId={1}, items={2}", userId, dinerId, Serialization.Serialize(items));
-            try
+            var msg = string.Format("Insert. userId={0}, orderId={1}, items={2}", userId, orderId, Serialization.Serialize(items));
+            _log.Info(msg);
+            var entities = new List<OrderItem>();
+            // todo if exists add to qnty
+            // todo check of menu item is still avialable
+            foreach (var item in items)
             {
-                _log.Info(msg);
-                var e = await GetEntityAsync(userId, dinerId);
-                // todo if exists add to qnty
-                // todo check of menu item is still avialable
-                foreach (var item in items)
-                {
-                    e.Items.Add(_resturantFactory.Create(item));
-                }
-                // todo seperate threads for update and get menu
-                e = await _dinerRepository.UpdateAsync(userId, e);
-                var menu = await _menuService.GetAsync(userId, e.MenuId);
-                return _resturantFactory.Create(e, menu);
+                entities.Add(_restaurantFactory.Create(item));
             }
-            catch (EntityDoesNotExistException exception)
-            {
-                _log.Error(msg, exception);
-                throw;
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                throw new ApplicationException("Failed to insert " + dinerId + " " + FriendlyName);
-            }
+            // todo seperate threads for update and get menu
+            var order = await _orderRepository.AddItemsAsync(userId, orderId, entities.ToArray());
+            var menu = await _menuService.GetAsync(userId, order.MenuId);
+            return _restaurantFactory.Create(order, menu);
         }
 
-        public async Task<bool> CloseDinerAsync(long userId, long dinerId)
+        public async Task<bool> CloseOrderAsync(long userId, long orderId)
         {
-            var msg = string.Format("Close. userId={0}, dinerId={1}", userId, dinerId);
-            try
-            {
-                _log.Info(msg);
-                var e = await GetEntityAsync(userId, dinerId);
-                e.State = Order.States.Closed;
-                await _dinerRepository.UpdateAsync(userId, e);
-                return true;
-            }
-            catch (EntityDoesNotExistException exception)
-            {
-                _log.Error(msg, exception);
-                throw;
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                throw new ApplicationException("Failed to insert " + dinerId + " " + FriendlyName);
-            }
+            var msg = string.Format("Close. userId={0}, orderId={1}", userId, orderId);
+            _log.Info(msg);
+            var e = await GetEntityAsync(userId, orderId);
+            e.State = Order.States.Closed;
+            await _orderRepository.CloseAsync(userId, orderId);
+            return true;
         }
 
 
@@ -144,17 +93,10 @@ namespace tba.Restaurant.App.Services
         private async Task<Order> GetEntityAsync(long userId, long entityId)
         {
             var msg = string.Format("GetEntityAsync. userId={0}, entityId={1}", userId, entityId);
-            try
-            {
-                _log.Info(msg);
-                var e = await _dinerRepository.GetAsync(entityId);
-                return await Task.FromResult(e);
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                return null;
-            }
+
+            _log.Info(msg);
+            var e = await _orderRepository.GetAsync(entityId);
+            return await Task.FromResult(e);
         }
     }
 }

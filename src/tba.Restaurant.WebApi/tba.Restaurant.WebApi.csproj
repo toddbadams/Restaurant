@@ -190,6 +190,10 @@
       <Project>{ed26a91b-fb1f-446f-8977-5c11ab1b3f5c}</Project>
       <Name>tba.Restaurant.App</Name>
     </ProjectReference>
+    <ProjectReference Include="..\tba.Restaurant.DataEf\tba.Restaurant.DataEf.csproj">
+      <Project>{1a982aef-d6cf-401e-89f9-e8b408db184b}</Project>
+      <Name>tba.Restaurant.DataEf</Name>
+    </ProjectReference>
     <ProjectReference Include="..\tba.Restaurant\tba.Restaurant.csproj">
       <Project>{adcfda49-a477-4c85-8cf4-c5f5e07d924d}</Project>
       <Name>tba.Restaurant</Name>

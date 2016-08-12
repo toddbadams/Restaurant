@@ -155,17 +155,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ConfigurationProvider.cs" />
-    <Compile Include="Email\Interfaces\IEmailService.cs" />
-    <Compile Include="Email\Models\EmailCategory.cs" />
-    <Compile Include="Email\Models\EmailMessage.cs" />
     <Compile Include="Exceptions\ConfigurationSectionMissingException.cs" />
     <Compile Include="Configuration\IConfigurationProvider.cs" />
     <Compile Include="Exceptions\EntityDoesNotExistException.cs" />
     <Compile Include="Filters\EntityDoesNotExistExceptionFilterAttribute.cs" />
     <Compile Include="Filters\NotImplExceptionFilterAttribute.cs" />
-    <Compile Include="Persistence\Extensions\IEmail.cs" />
-    <Compile Include="Persistence\Cache\CacheReadOnlyRepository.cs" />
-    <Compile Include="Persistence\Cache\CacheRepository.cs" />
     <Compile Include="Utilities\ITimeProvider.cs" />
     <Compile Include="Utilities\TimeProvider.cs" />
     <Compile Include="Utilities\DateTimeExtensions.cs" />

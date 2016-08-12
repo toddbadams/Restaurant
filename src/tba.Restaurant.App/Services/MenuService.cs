@@ -12,13 +12,13 @@ namespace tba.Restaurant.App.Services
     public class MenuService : IMenuService
     {
         private readonly IRepository<Menu> _menuRepository;
-        private readonly IResturantFactory _resturantFactory;
+        private readonly IRestaurantFactory _resturantFactory;
         private readonly ILog _log;
         private const string FriendlyName = "Menu Service";
 
         public MenuService(IRepository<Menu> menuRepository,
             ITimeProvider timeProvider,
-            IResturantFactory resturantFactory,
+            IRestaurantFactory resturantFactory,
             ILog log)
         {
             _menuRepository = menuRepository;
@@ -35,23 +35,15 @@ namespace tba.Restaurant.App.Services
         public async Task<MenuModel> InsertMenuAsync(long userId, MenuRequest menu)
         {
             var msg = string.Format("Insert. userId={0}, menu={1}", userId, Serialization.Serialize(menu));
-            try
-            {
-                _log.Info(msg);
-                var e = _resturantFactory.Create(menu);
-                await _menuRepository.InsertAsync(userId, e);
-                if (menu.Items != null)
-                {
-                    var results = await InsertMenuItemsAsync(userId, e.Id, menu.Items);
-                }
-                return _resturantFactory.Create(e);
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                throw new ApplicationException("Failed to insert " + menu.Name + " " + FriendlyName);
-            }
 
+            _log.Info(msg);
+            var e = _resturantFactory.Create(menu);
+            await _menuRepository.InsertAsync(userId, e);
+            if (menu.Items != null)
+            {
+                var results = await InsertMenuItemsAsync(userId, e.Id, menu.Items);
+            }
+            return _resturantFactory.Create(e);
         }
 
         private async Task<MenuModel> InsertMenuItemsAsync(long userId, long menuId, MenuItemRequest[] items)
@@ -75,17 +67,9 @@ namespace tba.Restaurant.App.Services
         private async Task<Menu> GetEntityAsync(long userId, long entityId)
         {
             var msg = string.Format("GetEntityAsync. userId={0}, entityId={1}", userId, entityId);
-            try
-            {
-                _log.Info(msg);
-                var e = await _menuRepository.GetAsync(entityId);
-                return await Task.FromResult(e);
-            }
-            catch (Exception exception)
-            {
-                _log.Error(msg, exception);
-                return null;
-            }
+            _log.Info(msg);
+            var e = await _menuRepository.GetAsync(entityId);
+            return await Task.FromResult(e);
         }
     }
 }

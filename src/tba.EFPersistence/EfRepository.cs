@@ -15,13 +15,11 @@ namespace tba.EFPersistence
     public sealed class EfRepository<T> : EfReadOnlyRepository<T>, IRepository<T> where T : Entity
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly IDbSet<Entity.Audit> _auditTable;
 
         public EfRepository(DbContext context, ITimeProvider timeProvider)
             : base(context)
         {
             _timeProvider = timeProvider;
-            _auditTable = context.Set<Entity.Audit>();
         }
 
         #region public CRUD Methods
@@ -38,9 +36,7 @@ namespace tba.EFPersistence
 
             // add entity to data store
             Table.Add(entity);
-
-            Audit(userId, entity, Entity.AuditActionType.Insert);
-
+            
             // update the data store
             await Context.SaveChangesAsync();
 
@@ -56,9 +52,7 @@ namespace tba.EFPersistence
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
-
-            Audit(userId, entity, Entity.AuditActionType.Update);
-
+            
             // update to data store
             Table.Attach(entity);
             Context.Entry((Entity)entity).State = EntityState.Modified;
@@ -79,7 +73,6 @@ namespace tba.EFPersistence
             // process unit of work prior to update in data store
             foreach (var entity in entities)
             {
-                Audit(userId, entity, Entity.AuditActionType.Update);
                 Table.Attach(entity);
                 Context.Entry((Entity)entity).State = EntityState.Modified;
             }
@@ -102,8 +95,6 @@ namespace tba.EFPersistence
             // loop and delete
             foreach (T entity in entities)
             {
-                Audit(userId, entity, Entity.AuditActionType.Delete);
-
                 if (Context.Entry(entity).State == EntityState.Detached)
                     Table.Attach(entity);
 
@@ -126,9 +117,7 @@ namespace tba.EFPersistence
 
             // get our entity
             T entity = Table.Find(id);
-
-            Audit(userId, entity, Entity.AuditActionType.Delete);
-
+            
             //  delete
             if (Context.Entry(entity).State == EntityState.Detached)
                 Table.Attach(entity);
@@ -139,16 +128,6 @@ namespace tba.EFPersistence
         }
         #endregion
 
-        /// <summary>
-        /// Provide an audit trail for unsafe actions
-        /// </summary>
-        /// <param name="userId">the user making the change</param>
-        /// <param name="entity">the entity being changed</param>
-        /// <param name="auditAuditAction">The change AuditAction (insert,update,delete)</param>
-        private void Audit(long userId, T entity, Entity.AuditActionType auditAuditAction)
-        {
-            var a = entity.ToAuditEntity(userId, _timeProvider.UtcNow.ToUnixTimestamp(), auditAuditAction);
-            _auditTable.Add(a);
-        }
+
     }
 }
