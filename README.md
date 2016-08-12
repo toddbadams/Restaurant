@@ -19,6 +19,48 @@ This example has been design as a MVP of code style and contains a few common te
 ## Restaurant API
 The following is an MSON representation of the Restaurant API which runs at localhost:9001
 
+### Create a menu [POST]
+This creates a restaurant's menu.
+
+This action returns a 201 status code along with a JSON body.
+
++ Request (application/json)
+
+       {
+		  "name": "Todds",
+		  "items": [
+		    {
+		      "name": "Lentil crusted plaice fillet with pumpkin seed chutney, spiced yellow lentil and bottle gourd",
+		      "price": 19
+		    },
+		    {
+		      "name": "Spice crusted halibut with tomato tamarind sauce, ginger jaggery pickle",
+		      "price": 25
+		    }
+		  ]
+		}
+
++ Response 201 (application/json)
+
+    + Body
+
+			{
+			  "menuId": 1,
+			  "name": "Todds",
+			  "items": [
+			    {
+			      "id": 1,
+			      "name": "Lentil crusted plaice fillet with pumpkin seed chutney, spiced yellow lentil and bottle gourd",
+			      "price": 19
+			    },
+			    {
+			      "id": 2,
+			      "name": "Spice crusted halibut with tomato tamarind sauce, ginger jaggery pickle",
+			      "price": 25
+			    }
+			  ]
+			}
+
 ### Create a New Order [POST]
 This creates a restaurant order, and attaches a menu from which items can be ordered.
 
