@@ -8,7 +8,7 @@
 	},
 	"item": [
 		{
-			"name": "Add Menu",
+			"name": "Add menu to restaurant should return menu",
 			"request": {
 				"url": "http://localhost:9001/menus",
 				"method": "POST",
@@ -38,7 +38,7 @@
 			"response": []
 		},
 		{
-			"name": "Open Bill",
+			"name": "opening order should return order",
 			"request": {
 				"url": "http://localhost:9001/orders",
 				"method": "POST",
@@ -68,7 +68,16 @@
 			"response": []
 		},
 		{
-			"name": "GET",
+			"name": "get order should return order with empty items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests[\"Status code is 200\"] = (responseCode.code = 200);"
+					}
+				}
+			],
 			"request": {
 				"url": "http://localhost:9001/orders/1",
 				"method": "GET",
@@ -93,7 +102,7 @@
 			"response": []
 		},
 		{
-			"name": "Add Items",
+			"name": "Add items to order should update order",
 			"request": {
 				"url": "http://localhost:9001/orders/1/items",
 				"method": "POST",
@@ -123,7 +132,7 @@
 			"response": []
 		},
 		{
-			"name": "Close Bill",
+			"name": "closing order should return true",
 			"request": {
 				"url": "http://localhost:9001/orders/1/close",
 				"method": "POST",
@@ -147,6 +156,40 @@
 				"body": {
 					"mode": "raw",
 					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get order after close should not be found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests[\"Status code is 200\"] = (responseCode.code = 404);\n"
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:9001/orders/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip,deflate",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
 				},
 				"description": ""
 			},
