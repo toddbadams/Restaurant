@@ -23,10 +23,11 @@ namespace tba.Restaurant.WebApi.Controllers
         {
             // todo: implement IOC
             var context = new RestaurantDbContext();
+            var uow = new UnitOfWork(context);
             IOrderRepository repository = new OrderRepository(context);
             IRepository<Menu> menuRepository = new EfRepository<Menu>(context, TimeProvider.Current);
             IMenuService menuService = new MenuService(menuRepository, TimeProvider.Current, new ResturantFactory(), LogManager.GetLogger("MenuService"));
-            _service = new OrderService(repository, TimeProvider.Current, menuService, new ResturantFactory(), LogManager.GetLogger("OrderService"));
+            _service = new OrderService(repository, TimeProvider.Current, menuService, new ResturantFactory(), LogManager.GetLogger("OrderService"), uow);
         }
 
         [HttpGet]

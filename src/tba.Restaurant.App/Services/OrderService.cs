@@ -6,6 +6,8 @@ using tba.Restaurant.App.Models;
 using tba.Restaurant.Entities;
 using tba.Restaurant.Data;
 using System.Collections.Generic;
+using tba.Core.Persistence;
+using System;
 
 namespace tba.Restaurant.App.Services
 {
@@ -16,19 +18,22 @@ namespace tba.Restaurant.App.Services
         private readonly IMenuService _menuService;
         private readonly IRestaurantFactory _restaurantFactory;
         private readonly ILog _log;
+        private readonly IUnitOfWork _unitOfWork;
         private const string FriendlyName = "Order Service";
 
         public OrderService(IOrderRepository orderRepository,
             ITimeProvider timeProvider,
             IMenuService menuService,
             IRestaurantFactory restaurantFactory,
-            ILog log)
+            ILog log,
+            IUnitOfWork unitOfWork)
         {
             _orderRepository = orderRepository;
             _timeProvider = timeProvider;
             _menuService = menuService;
             _restaurantFactory = restaurantFactory;
             _log = log;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<OrderModel> GetAsync(long userId, long orderId)
@@ -67,10 +72,23 @@ namespace tba.Restaurant.App.Services
             {
                 entities.Add(_restaurantFactory.Create(item));
             }
-            // todo seperate threads for update and get menu
-            var order = await _orderRepository.AddItemsAsync(userId, orderId, entities.ToArray());
-            var menu = await _menuService.GetAsync(userId, order.MenuId);
-            return _restaurantFactory.Create(order, menu);
+            using (var t = _unitOfWork.BeginTransaction())
+            {
+                try
+                {
+                    // todo seperate threads for update and get menu
+                    var order = await _orderRepository.AddItemsAsync(userId, orderId, entities.ToArray());
+                    var menu = await _menuService.GetAsync(userId, order.MenuId);
+                    t.Commit();
+                    return _restaurantFactory.Create(order, menu);
+                }
+                catch (Exception ex)
+                {
+                    _log.Error("Failed to insert order, rolling back", ex);
+                    t.Rollback();
+                    throw;
+                }
+            }
         }
 
         public async Task<bool> CloseOrderAsync(long userId, long orderId)

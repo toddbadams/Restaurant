@@ -160,6 +160,8 @@
     <Compile Include="Exceptions\EntityDoesNotExistException.cs" />
     <Compile Include="Filters\EntityDoesNotExistExceptionFilterAttribute.cs" />
     <Compile Include="Filters\NotImplExceptionFilterAttribute.cs" />
+    <Compile Include="Persistence\ITransaction.cs" />
+    <Compile Include="Persistence\IUnitOfWork.cs" />
     <Compile Include="Utilities\ITimeProvider.cs" />
     <Compile Include="Utilities\TimeProvider.cs" />
     <Compile Include="Utilities\DateTimeExtensions.cs" />
