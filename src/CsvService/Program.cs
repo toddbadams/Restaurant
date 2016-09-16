@@ -13,20 +13,20 @@ namespace CsvService
         /// </summary>
         static void Main()
         {
-#if DEBUG
+//#if DEBUG
             // debug running of the service
             var myService = new CsvService();
             myService.OnDebug();
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
-#else
-            // release running of the service
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] 
-            { 
-                new CsvService() 
-            };
-            ServiceBase.Run(ServicesToRun);
-#endif
+//#else
+//            // release running of the service
+//            ServiceBase[] ServicesToRun;
+//            ServicesToRun = new ServiceBase[] 
+//            { 
+//                new CsvService() 
+//            };
+//            ServiceBase.Run(ServicesToRun);
+//#endif
         }
     }
 }
